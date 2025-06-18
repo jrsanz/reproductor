@@ -1,0 +1,302 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Reproductor de Vídeo Personalizado</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+
+<body>
+    <div class="header-bar">
+            <h1 class="header-title">Reproductor de Vídeo Personalizado</h1>
+            <p class="header-subtitle">By Jesús Ricardo Delgado Sánchez</p>
+        </div>
+    <!-- Contenedor principal del reproductor de video -->
+    <div class="video-player-container">
+        <!-- Contenedor para el reproductor de video -->
+        <div class="video-wrapper">
+            <!-- Elemento de reproductor de video -->
+            <video id="videoPlayer" class="video-element best-fit">
+                <source src="videos/video1.mp4" type="video/mp4">
+                <track kind="subtitles" src="subs/subtitles.vtt" srclang="es" label="Español" default>
+                Tu navegador no soporta el elemento video.
+            </video>
+
+            <!-- Overlay para captura de pantalla -->
+            <div id="screenshotOverlay" class="screenshot-overlay">
+                <span>¡Captura guardada!</span>
+            </div>
+
+            <!-- Título del video en hover -->
+            <div id="videoTitleOverlay" class="video-title-overlay"></div>
+
+            <!-- Botón de ayuda -->
+            <button id="helpBtn" class="help-btn-overlay">
+                <svg viewBox="0 0 24 24">
+                    <path
+                        d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 17h-2v-2h2v2zm2.07-7.75l-.9.92C13.45 12.9 13 13.5 13 15h-2v-.5c0-1.1.45-2.1 1.17-2.83l1.24-1.26c.37-.36.59-.86.59-1.41 0-1.1-.9-2-2-2s-2 .9-2 2H8c0-2.21 1.79-4 4-4s4 1.79 4 4c0 .88-.36 1.68-.93 2.25z" />
+                </svg>
+            </button>
+
+            <!-- Cheatsheet de atajos -->
+            <div id="cheatsheetOverlay" class="cheatsheet-overlay">
+                <button id="cheatsheetClose" class="cheatsheet-close">×</button>
+                <div class="cheatsheet-title">Atajos de Teclado</div>
+                <div class="cheatsheet-grid">
+                    <div class="cheatsheet-key">Espacio</div>
+                    <div class="cheatsheet-action">Play/Pausa</div>
+
+                    <div class="cheatsheet-key">M</div>
+                    <div class="cheatsheet-action">Silenciar/Activar</div>
+
+                    <div class="cheatsheet-key">F</div>
+                    <div class="cheatsheet-action">Pantalla completa</div>
+
+                    <div class="cheatsheet-key">←</div>
+                    <div class="cheatsheet-action">Retroceder 10s</div>
+
+                    <div class="cheatsheet-key">→</div>
+                    <div class="cheatsheet-action">Avanzar 10s</div>
+
+                    <div class="cheatsheet-key">↑</div>
+                    <div class="cheatsheet-action">Subir volumen</div>
+
+                    <div class="cheatsheet-key">↓</div>
+                    <div class="cheatsheet-action">Bajar volumen</div>
+                </div>
+            </div>
+
+            <!-- Animación de reproducción/pausa -->
+            <div id="playPauseAnimation" class="icon-animation">
+                <svg class="play-icon-anim" viewBox="0 0 24 24">
+                    <path d="M8 5v14l11-7z" />
+                </svg>
+                <svg class="pause-icon-anim" viewBox="0 0 24 24" style="display: none;">
+                    <path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z" />
+                </svg>
+            </div>
+
+            <!-- Animación de aumentar/disminuir volumen -->
+            <div id="volumeAnimation" class="icon-animation">
+                <svg class="increase-volume-icon-anim" viewBox="0 0 24 24">
+                    <path d="M3 10v4h4l5 5V5L7 10H3zm13.5 2c0-1.77-1.02-3.29-2.5-4.03v8.05c1.48-.74 2.5-2.26 2.5-4.02zm2.5 0c0 3.04-1.64 5.64-4.1 7.07l1.4 1.4C18.67 18.36 20 15.36 20 12s-1.33-6.36-3.7-8.47l-1.4 1.4C17.36 6.36 19 8.96 19 12z" />
+                </svg>
+                <svg class="decrease-volume-icon-anim" viewBox="0 0 24 24" style="display: none;">
+                    <path d="M3 10v4h4l5 5V5L7 10H3zm12.5 2c0-1.77-1.02-3.29-2.5-4.03v8.05c1.48-.74 2.5-2.26 2.5-4.02z" />
+                </svg>
+            </div>
+
+            <!-- Animaciones de retroceso de vídeo -->
+            <div id="seekBackwardAnimation" class="seek-animation left">
+                <svg viewBox="0 0 24 24">
+                    <path d="M11 18V6l-8.5 6 8.5 6zm.5-6l8.5 6V6l-8.5 6z" />
+                </svg>
+            </div>
+
+            <!-- Animaciones de avance de vídeo -->
+            <div id="seekForwardAnimation" class="seek-animation right">
+                <svg viewBox="0 0 24 24">
+                    <path d="M4 18l8.5-6L4 6v12zm9-12v12l8.5-6L13 6z" />
+                </svg>
+            </div>
+
+            <!-- Controles personalizados -->
+            <div class="controls-overlay">
+                <!-- Barra de progreso -->
+                <div class="progress-container">
+                    <div class="progress-bar">
+                        <div class="progress-filled" id="progressFilled"></div>
+                        <div class="progress-handle" id="progressHandle"></div>
+                        <div id="progressTooltip" class="progress-tooltip">00:00</div>
+                    </div>
+                    <div class="time-display">
+                        <span id="currentTime">00:00</span> / <span id="duration">00:00</span>
+                    </div>
+                </div>
+
+                <!-- Controles inferiores -->
+                <div class="controls-bottom">
+                    <!-- Controles de la izquierda -->
+                    <div class="controls-left">
+                        <!-- Botón de subtitulos -->
+                        <button id="subtitlesBtn" class="control-btn">
+                            <svg viewBox="0 0 24 24">
+                                <path
+                                    d="M20 4H4c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zM4 12h4v2H4v-2zm10 6H4v-2h10v2zm6 0h-4v-2h4v2zm0-4H10v-2h10v2z" />
+                            </svg>
+                        </button>
+
+                        <!-- Contenedor del volumen -->
+                        <div id="volumeControlContainer" class="volume-control-container">
+                            <!-- Botón de silenciar/activar -->
+                            <button id="muteBtn" class="control-btn">
+                                <svg class="volume-icon" viewBox="0 0 24 24">
+                                    <path
+                                        d="M3 9v6h4l5 5V4L7 9H3zm13.5 3c0-1.77-1.02-3.29-2.5-4.03v8.05c1.48-.73 2.5-2.25 2.5-4.02zM14 3.23v2.06c2.89.86 5 3.54 5 6.71s-2.11 5.85-5 6.71v2.06c4.01-.91 7-4.49 7-8.77s-2.99-7.86-7-8.77z" />
+                                </svg>
+                                <svg class="mute-icon" viewBox="0 0 24 24" style="display: none;">
+                                    <path
+                                        d="M16.5 12c0-1.77-1.02-3.29-2.5-4.03v2.21l2.45 2.45c.03-.2.05-.41.05-.63zm2.5 0c0 .94-.2 1.82-.54 2.64l1.51 1.51C20.63 14.91 21 13.5 21 12c0-4.28-2.99-7.86-7-8.77v2.06c2.89.86 5 3.54 5 6.71zM4.27 3L3 4.27 7.73 9H3v6h4l5 5v-6.73l4.25 4.25c-.67.52-1.42.93-2.25 1.18v2.06c1.38-.31 2.63-.95 3.69-1.81L19.73 21 21 19.73l-9-9L4.27 3zM12 4L9.91 6.09 12 8.18V4z" />
+                                </svg>
+                            </button>
+
+                            <!-- Barra de volumen -->
+                            <div id="volumeContainer" class="volume-container">
+                                <input type="range" id="volumeSlider" class="volume-slider" min="0" max="100" value="100">
+                                <div id="volumeTooltip" class="volume-tooltip">100</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Controles del centro -->
+                    <div class="controls-center">
+                        <!-- Botón de vídeo anterior -->
+                        <button id="prevBtn" class="control-btn">
+                            <svg viewBox="0 0 24 24">
+                                <path d="M6 6h2v12H6zm3.5 6l8.5 6V6z" />
+                            </svg>
+                        </button>
+
+                        <!-- Botón de reproducción/pausa -->
+                        <button id="playPauseBtn" class="control-btn main-play">
+                            <svg class="play-icon" viewBox="0 0 24 24">
+                                <path d="M8 5v14l11-7z" />
+                            </svg>
+                            <svg class="pause-icon" viewBox="0 0 24 24" style="display: none;">
+                                <path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z" />
+                            </svg>
+                        </button>
+
+                        <!-- Botón de vídeo siguiente -->
+                        <button id="nextBtn" class="control-btn">
+                            <svg viewBox="0 0 24 24">
+                                <path d="M6 18l8.5-6L6 6v12zM16 6v12h2V6h-2z" />
+                            </svg>
+                        </button>
+                    </div>
+
+                    <!-- Controles de la derecha -->
+                    <div class="controls-right">
+                        <!-- Selector de velocidad -->
+                        <div class="speed-container">
+                            <div id="speedDisplay" class="speed-display">1x</div>
+                            <div id="speedOptions" class="speed-options">
+                                <div class="speed-option" data-speed="0.25">0.25x</div>
+                                <div class="speed-option" data-speed="0.5">0.5x</div>
+                                <div class="speed-option" data-speed="0.75">0.75x</div>
+                                <div class="speed-option active" data-speed="1">1x</div>
+                                <div class="speed-option" data-speed="1.25">1.25x</div>
+                                <div class="speed-option" data-speed="1.5">1.5x</div>
+                                <div class="speed-option" data-speed="2">2x</div>
+                            </div>
+                        </div>
+
+                        <!-- Botón de captura de pantalla -->
+                        <button id="screenshotBtn" class="control-btn">
+                            <svg viewBox="0 0 24 24">
+                                <path
+                                    d="M9 2L7.17 4H4c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2h-3.17L15 2H9zm3 15c-2.76 0-5-2.24-5-5s2.24-5 5-5 5 2.24 5 5-2.24 5-5 5z" />
+                            </svg>
+                        </button>
+
+                        <!-- Botón de pantalla completa -->
+                        <button id="fullscreenBtn" class="control-btn">
+                            <svg class="fullscreen-enter" viewBox="0 0 24 24">
+                                <path
+                                    d="M7 14H5v5h5v-2H7v-3zm-2-4h2V7h3V5H5v5zm12 7h-3v2h5v-5h-2v3zM14 5v2h3v3h2V5h-5z" />
+                            </svg>
+                            <svg class="fullscreen-exit" viewBox="0 0 24 24" style="display: none;">
+                                <path
+                                    d="M5 16h3v3h2v-5H5v2zm3-8H5v2h5V5H8v3zm6 11h2v-3h3v-2h-5v5zm2-11V5h-2v5h5V8h-3z" />
+                            </svg>
+                        </button>
+
+                        <!-- Selector de tamaño de pantalla -->
+                        <div class="size-container">
+                            <div id="sizeDisplay" class="size-display">
+                                <svg viewBox="0 0 24 24">
+                                    <path
+                                        d="M19 12h-2v3h-3v2h5v-5zM7 9h3V7H5v5h2V9zm14-6H3c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h18c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm0 16H3V5h18v14z" />
+                                </svg>
+                            </div>
+                            <div id="sizeOptions" class="size-options">
+                                <div class="size-option" data-size="ratio-4-3">4:3</div>
+                                <div class="size-option" data-size="ratio-16-9">16:9</div>
+                                <div class="size-option active" data-size="fit-screen">Ajustar a pantalla</div>
+                                <div class="size-option" data-size="best-fit">Mejor ajuste</div>
+                                <div class="size-option" data-size="fill">Rellenar</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Lista de videos -->
+        <div class="playlist-container">
+            <h3>Lista de Reproducción</h3>
+            <div class="playlist" id="playlist">
+                <div class="playlist-item active"
+                    data-src="videos/video1.mp4"
+                    data-title="Colombia - Lo Mejor de Guatapé">
+                    <div class="playlist-thumbnail">
+                        <img src="miniaturas/video1.jpg" alt="Colombia - Lo Mejor de Guatapé">
+                    </div>
+                    <div class="playlist-info">
+                        <h4>Colombia - Lo Mejor de Guatapé</h4>
+                        <p>Duración: 01:27</p>
+                    </div>
+                </div>
+
+                <div class="playlist-item"
+                    data-src="videos/video2.mp4"
+                    data-title="Perú - Lo mejor de Machu Picchu">
+                    <div class="playlist-thumbnail">
+                        <img src="miniaturas/video2.jpg" alt="Perú - Lo mejor de Machu Picchu">
+                    </div>
+                    <div class="playlist-info">
+                        <h4>Perú - Lo mejor de Machu Picchu</h4>
+                        <p>Duración: 01:34</p>
+                    </div>
+                </div>
+
+                <div class="playlist-item"
+                    data-src="videos/video3.mp4"
+                    data-title="Roma - Italia">
+                    <div class="playlist-thumbnail">
+                        <img src="miniaturas/video3.jpg" alt="Roma - Italia">
+                    </div>
+                    <div class="playlist-info">
+                        <h4>Roma - Italia</h4>
+                        <p>Duración: 03:07</p>
+                    </div>
+                </div>
+
+                <div class="playlist-item"
+                    data-src="videos/video4.mp4"
+                    data-title="Cristo Redentor - Rio de Janeiro, Brazil">
+                    <div class="playlist-thumbnail">
+                        <img src="miniaturas/video4.jpg" alt="Cristo Redentor - Rio de Janeiro, Brazil">
+                    </div>
+                    <div class="playlist-info">
+                        <h4>Cristo Redentor - Rio de Janeiro, Brazil</h4>
+                        <p>Duración: 03:05</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="screenshots-section">
+                <h4>Capturas de Pantalla</h4>
+                <div id="screenshotsGrid" class="screenshots-grid">
+                    <!-- Las capturas se agregarán dinámicamente aquí -->
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+
+</html>
